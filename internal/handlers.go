@@ -8,12 +8,9 @@ import (
 
 
 func (s *server) getLanguages() http.HandlerFunc{
-	var languages []Language
-	languages = append(languages, Language{Language: "polish", Code: "pl"})
-	languages = append(languages, Language{Language: "english", Code: "en"})
 	return func(w http.ResponseWriter , r *http.Request){
 		w.Header().Set("Content-Type", "application/json")
-		if err := json.NewEncoder(w).Encode(languages); err != nil{
+		if err := json.NewEncoder(w).Encode(s.languages); err != nil{
 			http.Error(w,err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -21,23 +18,17 @@ func (s *server) getLanguages() http.HandlerFunc{
 }
 
 func (s *server) getLanguage() http.HandlerFunc{
-	var languages []Language
-	languages = append(languages, Language{Language: "polish", Code: "pl"})
-	languages = append(languages, Language{Language: "english", Code: "en"})
 	return func(w http.ResponseWriter, r*http.Request){
 		w.Header().Set("Content-Type", "application/json")
 		params := mux.Vars(r)
-		for _, item := range languages{
+		for _, item := range s.languages{
 			if item.Code == params["code"]{
 				if err := json.NewEncoder(w).Encode(item) ; err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 					return
 				}
-
 			}
 		}
-
-
 	}
 }
 
