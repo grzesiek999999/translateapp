@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"go.uber.org/zap"
-	"log"
 	"net/http"
 )
 
@@ -51,9 +50,6 @@ func (s *Server) translate() http.HandlerFunc {
 		defer logger.Sync()
 		sugar := logger.Sugar()
 		sugar.Infof("GET request on localhost:8080/translate")
-		if logger == nil {
-			log.Println("request type: GET, endpoint: localhost:8080/languages")
-		}
 		if err := json.NewEncoder(w).Encode(response); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
