@@ -1,14 +1,17 @@
 package internal
 
-import "github.com/gorilla/mux"
+import (
+	"github.com/gorilla/mux"
+	"net/http"
+)
 
-type server struct {
+type Server struct {
 	*mux.Router
 	languages []Language
 }
 
-func NewServer() *server {
-	s := &server{
+func NewServer() *Server {
+	s := &Server{
 		Router: mux.NewRouter(),
 		languages: []Language{
 			{
@@ -23,4 +26,8 @@ func NewServer() *server {
 	}
 	s.routes()
 	return s
+}
+
+func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	s.Router.ServeHTTP(w, r)
 }
