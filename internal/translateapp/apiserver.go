@@ -1,21 +1,26 @@
 package translateapp
 
 import (
+	"context"
 	"github.com/gorilla/mux"
 	"go.uber.org/zap"
 	"net/http"
 )
 
-type Api struct {
+type App struct {
 	logger *zap.Logger
 	*mux.Router
-	languages []Language
-	Service   *Service
+	Service Servicer
 }
 
-func NewApi(logger *zap.Logger) *Api {
-	a := &Api{
-		Service: NewService(),
+type Servicer interface {
+	GetLanguages(context.Context) (*Response, error)
+	Translate(ctx context.Context, word WordToTranslate) (*TranslateResponse, error)
+}
+
+func NewApp(service Servicer, logger *zap.Logger) *App {
+	a := &App{
+		Service: service,
 		logger:  logger,
 		Router:  mux.NewRouter(),
 	}
@@ -23,6 +28,6 @@ func NewApi(logger *zap.Logger) *Api {
 	return a
 }
 
-func (a *Api) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (a *App) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	a.Router.ServeHTTP(w, r)
 }

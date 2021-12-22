@@ -1,27 +1,47 @@
 package translateapp
 
-//Language struct group data about langauge
+import "fmt"
+
 type Language struct {
 	Name string `json:"Name"`
 	Code string `json:"Code"`
 }
 
+type ListLanguage struct {
+	Languages []Language
+}
+
+type Response struct {
+	Code    int          `json:"code"`
+	Message string       `json:"message"`
+	Data    ListLanguage `json:"data"`
+}
+
+type Error struct {
+	Code    int    `json:"code"`
+	Message string `json:"error"`
+}
+
+type WordTranslate struct {
+	Text string `json:"translatedText"`
+}
+
+type TranslateResponse struct {
+	Code    int           `json:"code"`
+	Message string        `json:"message"`
+	Data    WordTranslate `json:"data"`
+}
+
 type WordToTranslate struct {
-	Word   string `json:"word"`
+	Word   string `json:"q"`
 	Source string `json:"source"`
 	Target string `json:"target"`
 }
 
-type WordResponse struct {
-	TranslatedWord string
+type Errors struct {
+	Error string `json:"error"`
 }
 
-type ErrorResponse struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
-}
-
-type SuccessResponse struct {
-	Code int         `json:"code"`
-	Data interface{} `json:"data"`
+func (r Error) Error() string {
+	return fmt.Sprintf("code: %d, message: %s", r.Code, r.Message)
 }

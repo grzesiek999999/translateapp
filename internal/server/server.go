@@ -10,17 +10,13 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
-	"translateapp/internal/translateapp"
 )
 
-func GetServer() *http.Server {
+func GetServer(app http.Handler, logger *zap.Logger) *http.Server {
 	listenAddr := ":8080"
-	logger, _ := zap.NewProduction()
-	defer logger.Sync()
-	api := translateapp.NewApi(logger)
 	server := http.Server{
 		Addr:         listenAddr,
-		Handler:      api,
+		Handler:      app,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 		IdleTimeout:  15 * time.Second,
@@ -28,8 +24,8 @@ func GetServer() *http.Server {
 	return &server
 }
 
-func Run() error {
-	server := GetServer()
+func Run(server *http.Server, logger *zap.Logger) error {
+
 	serverErrors := make(chan error, 1)
 
 	go func() {

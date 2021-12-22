@@ -2,24 +2,23 @@ package translateapp
 
 //
 //import (
-//	"github.com/stretchr/testify/assert"
-//	"net/http"
-//	"net/http/httptest"
+//	"context"
 //	"testing"
-//)
+//	"translateapp/internal/logging"
+//)ls
+
 //
 //func TestHandlergetLanguage(t *testing.T) {
-//	s := GeServer()
-//	r := httptest.NewRequest("GET", "/api/languages", nil)
-//	w := httptest.NewRecorder()
-//	s.ServeHTTP(w, r)
-//	assert.Equal(t, w.Code, http.StatusOK)
+//	var translator LibreTranslator
+//	ctx := context.Background()
+//	logger := logging.NewLogger("debug", true).Desugar()
+//	service := NewService(logger, translator)
+//	service.GetLanguages(ctx)
 //}
 //
 //func TestHandlertranstale(t *testing.T) {
-//	s := NewServer()
-//	r := httptest.NewRequest("POST", "/api/translate", nil)
-//	w := httptest.NewRecorder()
-//	s.ServeHTTP(w, r)
-//	assert.Equal(t, w.Code, http.StatusOK)
+//	var service Servicer
+//	logger := logging.NewLogger("debug", true).Desugar()
+//	app := NewApp(service, logger)
+//	app.getLanguages()
 //}

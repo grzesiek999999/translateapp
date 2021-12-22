@@ -2,25 +2,46 @@ package translateapp
 
 import (
 	"context"
-	"log"
+	"go.uber.org/zap"
 )
 
 type Service struct {
-	client *LibreTranslateClient
+	logger     *zap.Logger
+	translator LibreTranslator
 }
 
-func NewService() *Service {
+type LibreTranslator interface {
+	GetLanguages(ctx context.Context) (*ListLanguage, error)
+	Translate(ctx context.Context, word WordToTranslate) (*WordTranslate, error)
+}
+
+func NewService(logger *zap.Logger, translator LibreTranslator) *Service {
 	service := &Service{
-		client: NewLibreTranslateClient(),
+		translator: translator,
 	}
 	return service
 }
 
-func (s *Service) GetLanguages(ctx context.Context) ([]Language, error) {
-	res, err := s.client.GetLanguages(ctx)
-	log.Println(err)
+func (s *Service) GetLanguages(ctx context.Context) (*Response, error) {
+	listLanguages, err := s.translator.GetLanguages(ctx)
 	if err != nil {
 		return nil, err
 	}
-	return res, nil
+	var response Response
+	response.Data = *listLanguages
+	response.Code = 200
+	response.Message = "success"
+	return &response, nil
+}
+
+func (s *Service) Translate(ctx context.Context, word WordToTranslate) (*TranslateResponse, error) {
+	translation, err := s.translator.Translate(ctx, word)
+	if err != nil {
+		return nil, err
+	}
+	var response TranslateResponse
+	response.Data = *translation
+	response.Code = 200
+	response.Message = "success"
+	return &response, nil
 }

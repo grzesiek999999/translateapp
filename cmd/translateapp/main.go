@@ -2,13 +2,18 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
-	"translateapp/internal/server"
+	app "translateapp/internal/app/translateapp"
+	"translateapp/internal/logging"
 )
 
 func main() {
-	if err := server.Run(); err != nil {
+	logger := logging.NewLogger("debug", true).Desugar()
+	
+	if err := app.Run(logger); err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
 		os.Exit(1)
+		log.Fatal(err)
 	}
 }
