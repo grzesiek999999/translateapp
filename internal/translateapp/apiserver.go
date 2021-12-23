@@ -2,14 +2,16 @@ package translateapp
 
 import (
 	"context"
+	"net/http"
+
 	"github.com/gorilla/mux"
 	"go.uber.org/zap"
-	"net/http"
 )
 
 type App struct {
-	logger *zap.Logger
 	*mux.Router
+
+	logger  *zap.Logger
 	Service Servicer
 }
 

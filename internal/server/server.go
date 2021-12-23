@@ -3,13 +3,14 @@ package server
 import (
 	"context"
 	"fmt"
-	"go.uber.org/zap"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"go.uber.org/zap"
 )
 
 func GetServer(app http.Handler, logger *zap.Logger) *http.Server {
