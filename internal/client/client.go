@@ -5,20 +5,24 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"go.uber.org/zap"
+	"log"
 	"net/http"
 	"time"
 	"translateapp/internal/translateapp"
 )
 
-const BaseURL = "http://libretranslate:5000"
+const BaseURL = "http://172.18.0.2:5000/"
 
 type LibreTranslateClient struct {
+	logger     *zap.Logger
 	BaseURL    string
 	httpClient *http.Client
 }
 
-func NewLibreTranslateClient() *LibreTranslateClient {
+func NewLibreTranslateClient(logger *zap.Logger) *LibreTranslateClient {
 	return &LibreTranslateClient{
+		logger:  logger,
 		BaseURL: BaseURL,
 		httpClient: &http.Client{
 			Timeout: time.Minute,
@@ -60,10 +64,12 @@ func (c LibreTranslateClient) GetLanguages(ctx context.Context) (*translateapp.L
 		errorRes.Code = 500
 		return nil, errorRes
 	}
+	log.Println(&languages)
 	return &languages, nil
 }
 
 func (c LibreTranslateClient) Translate(ctx context.Context, word translateapp.WordToTranslate) (*translateapp.WordTranslate, error) {
+
 	var errorRes translateapp.Error
 	wordRequestJson, err := json.Marshal(word)
 	if err != nil {
@@ -101,5 +107,6 @@ func (c LibreTranslateClient) Translate(ctx context.Context, word translateapp.W
 		errorRes.Code = 500
 		return nil, errorRes
 	}
+	c.logger.Info("Value from client")
 	return &translation, nil
 }
