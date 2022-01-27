@@ -12,7 +12,7 @@ import (
 	"translateapp/internal/translateapp"
 )
 
-const BaseURL = "http://172.18.0.2:5000/"
+const BaseURL = "http://172.18.0.3:5000/"
 
 type LibreTranslateClient struct {
 	logger     *zap.Logger
@@ -69,7 +69,6 @@ func (c LibreTranslateClient) GetLanguages(ctx context.Context) (*translateapp.L
 }
 
 func (c LibreTranslateClient) Translate(ctx context.Context, word translateapp.WordToTranslate) (*translateapp.WordTranslate, error) {
-
 	var errorRes translateapp.Error
 	wordRequestJson, err := json.Marshal(word)
 	if err != nil {
@@ -85,8 +84,8 @@ func (c LibreTranslateClient) Translate(ctx context.Context, word translateapp.W
 	req = req.WithContext(ctx)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
-	res, err := c.httpClient.Do(req)
 
+	res, err := c.httpClient.Do(req)
 	if err != nil {
 		errorRes.Message = err.Error()
 		errorRes.Code = 500
@@ -107,6 +106,6 @@ func (c LibreTranslateClient) Translate(ctx context.Context, word translateapp.W
 		errorRes.Code = 500
 		return nil, errorRes
 	}
-	c.logger.Info("Value from client")
+	c.logger.Info("Value get from client")
 	return &translation, nil
 }

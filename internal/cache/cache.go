@@ -14,8 +14,8 @@ type Cache struct {
 }
 
 type Cacher interface {
-	Set(key string, value string, timeout time.Duration)
-	Get(key string) (string, error)
+	Set(key string, value interface{}, timeout *time.Duration)
+	Get(key string) (interface{}, error)
 }
 
 // Set adds value to the cache under specified key and timeout

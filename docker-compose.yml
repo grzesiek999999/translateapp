@@ -20,7 +20,7 @@ services:
       POSTGRES_DB: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - "127.0.0.1:5432:5432"
+      - "5432:5432"
 
   libretranslate:
     image: libretranslate/libretranslate:latest
