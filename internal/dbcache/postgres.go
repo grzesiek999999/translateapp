@@ -2,17 +2,24 @@ package dbcache
 
 import (
 	"context"
+	"time"
+
+	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
 	"go.uber.org/zap"
-	"time"
 )
 
+type Connector interface {
+	QueryRow(ctx context.Context, sql string, args ...interface{}) pgx.Row
+	Exec(ctx context.Context, sql string, arguments ...interface{}) (pgconn.CommandTag, error)
+}
+
 type Repo struct {
-	connection *pgx.Conn
+	connection Connector
 	logger     *zap.Logger
 }
 
-func NewRepo(conn *pgx.Conn, logger *zap.Logger) *Repo {
+func NewRepo(conn Connector, logger *zap.Logger) *Repo {
 	return &Repo{
 		connection: conn,
 		logger:     logger,

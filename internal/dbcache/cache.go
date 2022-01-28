@@ -3,9 +3,10 @@ package dbcache
 import (
 	"context"
 	"errors"
-	"go.uber.org/zap"
 	"sync"
 	"time"
+
+	"go.uber.org/zap"
 )
 
 var ErrDoesNotExist = errors.New("ErrDoesNotExist")
@@ -39,10 +40,10 @@ func (c *DBCache) Get(key string) (interface{}, error) {
 			data: res.data,
 		}
 		return item.data, nil
-	} else if res.ttl.Before(time.Now().Truncate(0)) {
+	}
+	if res.ttl.Before(time.Now().Truncate(0)) {
 		c.logger.Info("Deleting value from cache due to timeout")
 		c.repo.Delete(context.Background(), key)
-		return "", ErrDoesNotExist
 	}
 	return "", ErrDoesNotExist
 }
