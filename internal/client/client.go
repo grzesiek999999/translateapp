@@ -12,7 +12,7 @@ import (
 	"translateapp/internal/translateapp"
 )
 
-const BaseURL = "http://172.18.0.3:5000/"
+const BaseURL = "http://172.18.0.4:5000/"
 
 type LibreTranslateClient struct {
 	logger     *zap.Logger

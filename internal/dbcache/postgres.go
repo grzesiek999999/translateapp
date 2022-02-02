@@ -2,17 +2,27 @@ package dbcache
 
 import (
 	"context"
+	"errors"
+	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
 	"go.uber.org/zap"
 	"time"
 )
 
+var ValueDeleted = errors.New("Deleted")
+var ValueSet = errors.New("Value Set")
+
+type Connector interface {
+	QueryRow(ctx context.Context, sql string, args ...interface{}) pgx.Row
+	Exec(ctx context.Context, sql string, arguments ...interface{}) (pgconn.CommandTag, error)
+}
+
 type Repo struct {
-	connection *pgx.Conn
+	connection Connector
 	logger     *zap.Logger
 }
 
-func NewRepo(conn *pgx.Conn, logger *zap.Logger) *Repo {
+func NewRepo(conn Connector, logger *zap.Logger) *Repo {
 	return &Repo{
 		connection: conn,
 		logger:     logger,
@@ -34,7 +44,7 @@ func (r Repo) Set(ctx context.Context, key string, value string, timeout time.Ti
 		return err
 	}
 	r.logger.Info("Data Inserted")
-	return nil
+	return ValueSet
 }
 
 func (r Repo) Delete(ctx context.Context, key string) error {
@@ -42,5 +52,5 @@ func (r Repo) Delete(ctx context.Context, key string) error {
 	if err != nil {
 		return err
 	}
-	return nil
+	return ValueDeleted
 }
