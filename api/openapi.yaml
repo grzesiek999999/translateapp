@@ -74,6 +74,45 @@ paths:
         '500':
           description: Unknown Server Error
 
+
+ /batchtranslate:
+   post:
+     description: Upload txt file with words and returns translations
+     requestBody:
+       content:
+         multipart/form-data:
+           schema:
+             type: object
+             properties:
+               source:
+                 type: string
+               target:
+                 type: string
+               text:
+                 type: string
+                 format: binary
+
+
+     responses:
+       '200':
+         description: returns list of translated words from txt file
+         content:
+           multipart/form-data:
+             schema:
+               type: array
+               items:
+                 type: object
+                 properties:
+                   word:
+                     type: string
+                   translatedWord:
+                     type: string
+       '500':
+         description: Unknown Server Error
+
+
+
+
         
     
   

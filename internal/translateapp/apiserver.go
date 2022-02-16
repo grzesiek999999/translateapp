@@ -16,6 +16,7 @@ type App struct {
 type Servicer interface {
 	GetLanguages(context.Context) (*Response, error)
 	Translate(ctx context.Context, word WordToTranslate) (*TranslateResponse, error)
+	BatchTranslate(ctx context.Context, word WordToTranslate) (*BatchTranslateResponse, error)
 }
 
 func NewApp(service Servicer, logger *zap.Logger) *App {

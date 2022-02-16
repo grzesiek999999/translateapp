@@ -45,3 +45,15 @@ func (s *Service) Translate(ctx context.Context, word WordToTranslate) (*Transla
 	response.Message = "success"
 	return &response, nil
 }
+
+func (s *Service) BatchTranslate(ctx context.Context, word WordToTranslate) (*BatchTranslateResponse, error) {
+	translation, err := s.translator.Translate(ctx, word)
+	if err != nil {
+		return nil, err
+	}
+	var response BatchTranslateResponse
+	response.WordToTranslate = word.Word
+	response.WordTranslated = translation.Text
+
+	return &response, nil
+}

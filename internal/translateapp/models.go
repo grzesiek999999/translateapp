@@ -2,6 +2,11 @@ package translateapp
 
 import "fmt"
 
+type BatchTranslateResponse struct {
+	WordToTranslate string `json:"word"`
+	WordTranslated  string `json:"translatedWord"`
+}
+
 type Language struct {
 	Name string `json:"Name"`
 	Code string `json:"Code"`
@@ -38,6 +43,9 @@ type WordToTranslate struct {
 	Target string `json:"target"`
 }
 
+type ListWordToTranslate struct {
+	Words []WordToTranslate
+}
 type Errors struct {
 	Error string `json:"error"`
 }

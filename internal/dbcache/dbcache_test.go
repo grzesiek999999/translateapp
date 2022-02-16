@@ -3,6 +3,7 @@ package dbcache_test
 import (
 	"context"
 	"errors"
+	"github.com/jackc/pgx/v4"
 	"testing"
 	"time"
 	"translateapp/internal/dbcache"
@@ -79,16 +80,16 @@ func TestGetError(t *testing.T) {
 	require.NoError(t, mock.ExpectationsWereMet())
 }
 
-//func TestSet(t *testing.T) {
-//	const key = "test10"
-//	const value = "key"
-//
-//	expected := true
-//
-//	conn, err := pgx.Connect(context.Background(), "postgres://postgres:postgres@db:5432/postgres")
-//	require.NoError(t, err)
-//	defer conn.Close(context.Background())
-//	result := conn.QueryRow(context.Background(), "select exists(select 1 from cache where key='test10')")
-//	require.NoError(t, err)
-//	require.Equal(t, expected, result)
-//}
+func TestSet(t *testing.T) {
+	const key = "test10"
+	const value = "key"
+
+	expected := true
+
+	conn, err := pgx.Connect(context.Background(), "postgres://postgres:postgres@db:5432/postgres")
+	require.NoError(t, err)
+	defer conn.Close(context.Background())
+	result := conn.QueryRow(context.Background(), "select exists(select 1 from cache where key='test10')")
+	require.NoError(t, err)
+	require.Equal(t, expected, result)
+}
