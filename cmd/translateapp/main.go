@@ -1,16 +1,18 @@
 package main
 
 import (
-	"context"
+	"fmt"
 	"log"
-	"os/signal"
-	"syscall"
+	"os"
+	app "translateapp/internal/app/translateapp"
+	"translateapp/internal/logging"
 )
 
 func main() {
-	log.Printf("starting...")
-	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
-	defer done()
-	<-ctx.Done()
-	log.Printf("successful shutdown")
+	logger := logging.NewLogger("debug", true).Desugar()
+	if err := app.Run(logger); err != nil {
+		fmt.Fprintf(os.Stderr, "%s\n", err)
+		os.Exit(1)
+		log.Fatal(err)
+	}
 }

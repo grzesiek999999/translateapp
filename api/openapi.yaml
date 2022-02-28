@@ -1,0 +1,123 @@
+openapi: 3.0.0
+info:
+  title: translateapp API
+  description: API for translateapp project
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/api
+paths:
+  /languages:
+    get:
+      description: returns list of all languages
+      responses:
+        '200':
+          description: A JSON array of languages names and codes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    code:
+                      type: string
+                      
+                    name:
+                      type: string
+                      
+                  example:
+                    - code: pl
+                      name: polish
+                    - code: en
+                      name: english
+                      
+        '500':
+          description: Unknown Server Error
+          
+          
+  /translate:
+    post:
+      description: Translate given word with specified source language and target language
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                source:
+                  type: string
+                  example: polish
+                  
+                target:
+                  type: string
+                  example: english
+                  
+                word:
+                  type: string
+                  example: mysz
+              
+      responses:
+        '200':
+          description: returns translated word
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    TranslatedWord:
+                      type: string
+                      example: mysz
+                      
+        '500':
+          description: Unknown Server Error
+
+
+ /batchtranslate:
+   post:
+     description: Upload txt file with words and returns translations
+     requestBody:
+       content:
+         multipart/form-data:
+           schema:
+             type: object
+             properties:
+               source:
+                 type: string
+               target:
+                 type: string
+               text:
+                 type: string
+                 format: binary
+
+
+     responses:
+       '200':
+         description: returns list of translated words from txt file
+         content:
+           application/json:
+             schema:
+               type: array
+               items:
+                 type: object
+                 properties:
+                   word:
+                     type: string
+                   translatedWord:
+                     type: string
+       '500':
+         description: Unknown Server Error
+
+
+
+
+        
+    
+  
+
+  
+                
+  
+  
