@@ -34,26 +34,30 @@ func (s *Service) GetLanguages(ctx context.Context) (*Response, error) {
 	return &response, nil
 }
 
-func (s *Service) Translate(ctx context.Context, word WordToTranslate) (*TranslateResponse, error) {
-	translation, err := s.translator.Translate(ctx, word)
-	if err != nil {
-		return nil, err
+func (s *Service) Translate(ctx context.Context, words []WordToTranslate) (*[]TranslateResponse, error) {
+	var responseList []TranslateResponse
+	if len(words) == 1 {
+		translation, err := s.translator.Translate(ctx, words[0])
+		if err != nil {
+			return nil, err
+		}
+		response := make([]TranslateResponse, 1, 1)
+		response[0].Data = *translation
+		response[0].Code = 200
+		response[0].Message = "success"
+		return &response, nil
 	}
-	var response TranslateResponse
-	response.Data = *translation
-	response.Code = 200
-	response.Message = "success"
-	return &response, nil
-}
 
-func (s *Service) BatchTranslate(ctx context.Context, word WordToTranslate) (*BatchTranslateResponse, error) {
-	translation, err := s.translator.Translate(ctx, word)
-	if err != nil {
-		return nil, err
+	for _, v := range words {
+		translation, err := s.translator.Translate(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+		var response TranslateResponse
+		response.Data = *translation
+		response.Code = 200
+		response.Message = "success"
+		responseList = append(responseList, response)
 	}
-	var response BatchTranslateResponse
-	response.WordToTranslate = word.Word
-	response.WordTranslated = translation.Text
-
-	return &response, nil
+	return &responseList, nil
 }

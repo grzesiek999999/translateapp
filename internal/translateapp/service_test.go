@@ -25,10 +25,12 @@ func TestService(t *testing.T) {
 			},
 		},
 	}
-	exampleWord := translateapp.WordToTranslate{
-		Word:   "mouse",
-		Target: "pl",
-		Source: "en",
+	exampleWord := []translateapp.WordToTranslate{
+		{
+			Word:   "mouse",
+			Target: "pl",
+			Source: "en",
+		},
 	}
 	expectedWord := translateapp.WordTranslate{
 		Text: "mysz",
@@ -63,12 +65,11 @@ func TestService(t *testing.T) {
 	})
 	t.Run("ReturnsNoErrorOnSuccess", func(t *testing.T) {
 		lt := mocks.LibreTranslator{}
-		lt.On("Translate", mock.Anything, exampleWord).Return(&expectedWord, nil)
+		lt.On("Translate", mock.Anything, exampleWord[0]).Return(&expectedWord, nil)
 		service := translateapp.NewService(logging.DefaultLogger().Desugar(), &lt)
 		res, err := service.Translate(context.Background(), exampleWord)
 		require.NoError(t, err)
-		require.Equal(t, expectedWord.Text, res.Data.Text)
-
+		require.Equal(t, expectedWord.Text, (*res)[0].Data.Text)
 		lt.AssertNumberOfCalls(t, "Translate", 1)
 	})
 }

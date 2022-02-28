@@ -4,12 +4,16 @@ import (
 	"bufio"
 	"context"
 	"encoding/json"
-	"io"
 	"log"
 	"net/http"
 )
 
-func (a *App) getLanguages() http.HandlerFunc {
+// maximum memory size of upload file in kb
+const (
+	maxMemory int64 = 1024
+)
+
+func (a *App) GetLanguages() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
@@ -30,13 +34,14 @@ func (a *App) getLanguages() http.HandlerFunc {
 	}
 }
 
-func (a *App) translate() http.HandlerFunc {
+func (a *App) Translate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 		w.Header().Set("Content-Type", "application/json")
 		ctx := context.Background()
-		var word WordToTranslate
-		err := json.NewDecoder(r.Body).Decode(&word)
+		word := make([]WordToTranslate, 1, 1)
+		err := json.NewDecoder(r.Body).Decode(&word[0])
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -57,44 +62,40 @@ func (a *App) translate() http.HandlerFunc {
 
 func (a *App) BatchTranslate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var list []BatchTranslateResponse
-		var words []WordToTranslate
+		var wordsFile []string
+		var wordsTranslate []WordToTranslate
 		ctx := context.Background()
-		err := r.ParseMultipartForm(1024)
+		err := r.ParseMultipartForm(maxMemory)
 		if err != nil {
-			log.Fatal(err)
+			a.logger.Error("File is too big, maximum file size is 1024kb")
 		}
+
 		source := r.PostFormValue("source")
 		target := r.PostFormValue("target")
 		file, _, err := r.FormFile("text")
+
 		if err != nil {
 			log.Fatal(err)
 		}
-		reader := bufio.NewReader(file)
-		for {
-			line, err := reader.ReadString('\n')
-			if err != nil {
-				if err == io.EOF {
-					a.logger.Info("read file line error")
-					break
 
-				}
-			}
-			line = line[:len(line)-1]
+		scanner := bufio.NewScanner(file)
+		for scanner.Scan() {
+			wordsFile = append(wordsFile, scanner.Text())
+		}
+
+		for _, v := range wordsFile {
 			newWord := WordToTranslate{
 				Source: source,
 				Target: target,
-				Word:   line,
+				Word:   v,
 			}
-			words = append(words, newWord)
+			wordsTranslate = append(wordsTranslate, newWord)
 		}
+
 		defer file.Close()
 
-		for _, v := range words {
-			response, _ := a.Service.BatchTranslate(ctx, v)
-			list = append(list, *response)
-		}
-		json.NewEncoder(w).Encode(list)
+		response, _ := a.Service.Translate(ctx, wordsTranslate)
+		json.NewEncoder(w).Encode(response)
 		if err != nil {
 			log.Fatal(err)
 		}

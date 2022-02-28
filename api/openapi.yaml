@@ -97,7 +97,7 @@ paths:
        '200':
          description: returns list of translated words from txt file
          content:
-           multipart/form-data:
+           application/json:
              schema:
                type: array
                items:
